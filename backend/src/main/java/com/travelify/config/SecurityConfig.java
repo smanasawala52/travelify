@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,34 +41,44 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationFilter jwtFilter,
                                                    AuthenticationProvider authenticationProvider) throws Exception {
+        // AntPathRequestMatcher is required when H2 console registers a second servlet;
+        // string requestMatchers() cannot decide MVC vs Ant patterns in that case.
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/register",
-                                "/api/auth/login",
-                                "/api/auth/refresh",
-                                "/api/auth/forgot-password",
-                                "/api/auth/reset-password"
+                                ant("/api/auth/register"),
+                                ant("/api/auth/login"),
+                                ant("/api/auth/refresh"),
+                                ant("/api/auth/forgot-password"),
+                                ant("/api/auth/reset-password")
                         ).permitAll()
                         .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                ant("/v3/api-docs/**"),
+                                ant("/swagger-ui/**"),
+                                ant("/swagger-ui.html")
                         ).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/packages/**").permitAll()
-                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                        .requestMatchers("/api/agent/**").hasAnyRole("AGENT", "ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(ant(HttpMethod.GET, "/api/packages/**")).permitAll()
+                        .requestMatchers(ant("/api/customer/**")).hasRole("CUSTOMER")
+                        .requestMatchers(ant("/api/agent/**")).hasAnyRole("AGENT", "ADMIN")
+                        .requestMatchers(ant("/api/admin/**")).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    private static AntPathRequestMatcher ant(String pattern) {
+        return new AntPathRequestMatcher(pattern);
+    }
+
+    private static AntPathRequestMatcher ant(HttpMethod method, String pattern) {
+        return new AntPathRequestMatcher(pattern, method.name());
     }
 
     @Bean
