@@ -1,0 +1,2 @@
+// Placeholder Gradle settings for future multi-module Android project:
+// include(":customer", ":travel-agent", ":admin", ":shared")

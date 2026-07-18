@@ -1,0 +1,40 @@
+# Backend
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.log
+*.pid
+*.class
+
+# Frontend
+node_modules/
+dist/
+build/
+.env.local
+.env.*.local
+*.local
+
+# Mobile
+*.iml
+.gradle/
+local.properties
+*.apk
+*.aab
+*.ipa
+Pods/
+DerivedData/
+*.xcuserdata/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Secrets (keep examples)
+.env
+backend/.env
+backend/.env.prod
+frontend/webapp/.env

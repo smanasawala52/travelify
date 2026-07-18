@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/travelify}
+    username: ${SPRING_DATASOURCE_USERNAME:travelify}
+    password: ${SPRING_DATASOURCE_PASSWORD:travelify}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    baseline-version: 0
+    locations: classpath:db/migration
+
+travelify:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  booking:
+    allow-guest-booking: ${TRAVELIFY_ALLOW_GUEST_BOOKING:false}
+    create-account-automatically: ${TRAVELIFY_CREATE_ACCOUNT_AUTOMATICALLY:true}
