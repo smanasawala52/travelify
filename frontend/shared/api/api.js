@@ -109,6 +109,23 @@ export const agentApi = {
   updatePackage: (id, payload) => api.put(`/agent/packages/${id}`, payload),
   bookings: () => api.get('/agent/bookings'),
   updateBookingStatus: (id, status) => api.patch(`/agent/bookings/${id}/status`, { status }),
+  // Trip Management
+  listTrips: (params) => api.get('/agent/trips', { params }),
+  getTrip: (id) => api.get(`/agent/trips/${id}`),
+  createTrip: (payload) => api.post('/agent/trips', payload),
+  updateTrip: (id, payload) => api.put(`/agent/trips/${id}`, payload),
+  deleteTrip: (id) => api.delete(`/agent/trips/${id}`),
+  copyTrip: (id) => api.post(`/agent/trips/${id}/copy`),
+  listTemplates: (params) => api.get('/agent/templates', { params }),
+  getTemplate: (id) => api.get(`/agent/templates/${id}`),
+  // Service Management
+  listServices: (params) => api.get('/provider/services', { params }),
+  getService: (id) => api.get(`/provider/services/${id}`),
+  createService: (payload) => api.post('/provider/services', payload),
+  updateService: (id, payload) => api.put(`/provider/services/${id}`, payload),
+  deleteService: (id) => api.delete(`/provider/services/${id}`),
+  // Categories
+  listCategories: () => api.get('/categories'),
 };
 
 export const adminApi = {

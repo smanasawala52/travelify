@@ -1,5 +1,6 @@
 package com.travelify.repository;
 
+import com.travelify.model.ProviderType;
 import com.travelify.model.Role;
 import com.travelify.model.User;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     List<User> findByIsActiveTrue();
 
     List<User> findByRoleAndIsActiveTrue(Role role);
+
+    List<User> findByProviderType(ProviderType providerType);
+
+    List<User> findByProviderTypeAndIsActiveTrue(ProviderType providerType);
+
+    List<User> findByRoleAndProviderType(Role role, ProviderType providerType);
 
     long countByRole(Role role);
 

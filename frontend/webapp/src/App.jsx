@@ -14,6 +14,10 @@ import BookingPage from './pages/BookingPage';
 import CustomerDashboard from './pages/CustomerDashboard';
 import AgentDashboard from './pages/AgentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import TripListPage from './pages/agent/TripListPage';
+import TripFormPage from './pages/agent/TripFormPage';
+import ServiceListPage from './pages/agent/ServiceListPage';
+import ServiceFormPage from './pages/agent/ServiceFormPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleBasedRoute from './components/RoleBasedRoute';
 
@@ -95,6 +99,59 @@ export default function App() {
             </RoleBasedRoute>
           }
         />
+
+        {/* Agent Trip Management Routes */}
+        <Route
+          path="/agent/trips"
+          element={
+            <RoleBasedRoute roles={['AGENT', 'ADMIN']}>
+              <TripListPage />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="/agent/trips/create"
+          element={
+            <RoleBasedRoute roles={['AGENT', 'ADMIN']}>
+              <TripFormPage />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="/agent/trips/:tripId/edit"
+          element={
+            <RoleBasedRoute roles={['AGENT', 'ADMIN']}>
+              <TripFormPage />
+            </RoleBasedRoute>
+          }
+        />
+
+        {/* Provider Service Management Routes */}
+        <Route
+          path="/provider/services"
+          element={
+            <RoleBasedRoute roles={['AGENT', 'ADMIN']}>
+              <ServiceListPage />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="/provider/services/create"
+          element={
+            <RoleBasedRoute roles={['AGENT', 'ADMIN']}>
+              <ServiceFormPage />
+            </RoleBasedRoute>
+          }
+        />
+        <Route
+          path="/provider/services/:serviceId/edit"
+          element={
+            <RoleBasedRoute roles={['AGENT', 'ADMIN']}>
+              <ServiceFormPage />
+            </RoleBasedRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

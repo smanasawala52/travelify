@@ -45,6 +45,20 @@ public class User {
     @Builder.Default
     private Role role = Role.CUSTOMER;
 
+    /**
+     * Optional provider specialization for {@link Role#AGENT} accounts
+     * (travel agent, hotel, insurance, visa).
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider_type", length = 30)
+    private ProviderType providerType;
+
+    @Column(name = "business_name", length = 255)
+    private String businessName;
+
+    @Column(name = "business_address", columnDefinition = "TEXT")
+    private String businessAddress;
+
     @Column(length = 512)
     private String avatarUrl;
 

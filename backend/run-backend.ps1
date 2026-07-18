@@ -6,8 +6,6 @@ param(
 clear
 git pull origin main
 
-Remove-Item Env:SPRING_DATASOURCE_DRIVERCLASSNAME
-
 $env:SPRING_PROFILES_ACTIVE = "dev"
 $ErrorActionPreference = 'Stop'
 $BackendRoot = $PSScriptRoot
