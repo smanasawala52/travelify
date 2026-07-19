@@ -12,6 +12,10 @@ public interface TripCategoryRepository extends JpaRepository<TripCategory, Long
 
     boolean existsBySlug(String slug);
 
+    boolean existsBySlugAndIdNot(String slug, Long id);
+
+    List<TripCategory> findByIsActiveTrue();
+
     List<TripCategory> findByIsActiveTrueOrderBySortOrderAsc();
 
     List<TripCategory> findAllByOrderBySortOrderAsc();

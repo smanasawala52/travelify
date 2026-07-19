@@ -61,13 +61,6 @@ public class DataSeeder {
             PasswordEncoder passwordEncoder) {
 
         return args -> {
-            // Only run on dev profile
-            String profile = System.getProperty("spring.profiles.active", "");
-            if (!profile.contains("dev")) {
-                log.info("DataSeeder skipped — not running on dev profile");
-                return;
-            }
-
             long startTime = System.currentTimeMillis();
             log.info("Starting DataSeeder...");
 
@@ -670,14 +663,14 @@ public class DataSeeder {
     private void publishRandomData(List<TripTemplate> templates, List<AgentTrip> agentTrips, List<Service> services) {
         // Publish 80% of templates
         templates.forEach(template -> {
-            if (faker.bool().bool(0.8)) {
+            if (faker.bool().bool()) {
                 template.setStatus(PublishStatus.PUBLISHED);
             }
         });
 
         // Publish 70% of agent trips
         agentTrips.forEach(trip -> {
-            if (faker.bool().bool(0.7)) {
+            if (faker.bool().bool()) {
                 trip.setStatus(PublishStatus.PUBLISHED);
             }
         });
