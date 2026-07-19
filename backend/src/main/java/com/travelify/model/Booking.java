@@ -1,55 +1,95 @@
 package com.travelify.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "bookings")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_id")
-    private User customer;
+    @Column(name = "booking_reference", unique = true, nullable = false, length = 20)
+    private String bookingReference;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "package_id")
-    private TravelPackage travelPackage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private LocalDate travelDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agent_trip_id", nullable = false)
+    private AgentTrip agentTrip;
 
-    @Column(nullable = false)
-    private Integer travelers;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departure_id", nullable = false)
+    private AgentTripDeparture departure;
 
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
+    @Column(name = "currency", length = 3)
+    private String currency = "USD";
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private BookingStatus status;
+    @Column(name = "status", length = 20)
+    private BookingStatus status = BookingStatus.PENDING;
 
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", length = 20)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
-    @PrePersist
-    void onCreate() {
-        if (createdAt == null) {
-            createdAt = Instant.now();
-        }
-        if (status == null) {
-            status = BookingStatus.PENDING;
-        }
+    private Integer adults = 1;
+    private Integer children = 0;
+    private Integer infants = 0;
+
+    @Column(name = "special_requests", columnDefinition = "TEXT")
+    private String specialRequests;
+
+    @Column(name = "coupon_code", length = 50)
+    private String couponCode;
+
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    @Column(name = "booked_at")
+    private Instant bookedAt = Instant.now();
+
+    @Column(name = "confirmed_at")
+    private Instant confirmedAt;
+
+    @Column(name = "cancelled_at")
+    private Instant cancelledAt;
+
+    @Column(name = "payment_due_date")
+    private Instant paymentDueDate;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookingCustomer> bookingCustomers;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookingAddon> bookingAddons;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookingStatusHistory> statusHistory;
+
+    public enum BookingStatus {
+        PENDING, PAID, CONFIRMED, CANCELLED, COMPLETED
+    }
+
+    public enum PaymentStatus {
+        PENDING, PAID, REFUNDED
     }
 }

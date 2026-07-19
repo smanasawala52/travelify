@@ -1,19 +1,34 @@
 package com.travelify.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-/**
- * Placeholder email sender — logs reset links until SMTP is configured.
- */
+// This is a placeholder for a real email service integration (e.g., SendGrid, JavaMailSender)
 @Service
+@RequiredArgsConstructor
 public class EmailService {
-    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
-    public void sendPasswordResetEmail(String toEmail, String resetToken) {
-        // TODO: integrate SMTP / SendGrid / SES
-        log.info("Password reset email (placeholder) → to={} token={}", toEmail, resetToken);
-        log.info("Reset link (dev): http://localhost:5173/reset-password?token={}", resetToken);
+    public void sendEmail(String to, String subject, String body) {
+        // In a real application, this would integrate with an actual email sending library
+        // For now, we'll just print to console or log.
+        System.out.println("Sending email to: " + to);
+        System.out.println("Subject: " + subject);
+        System.out.println("Body:\n" + body);
+        System.out.println("--- End Email ---");
+    }
+
+    public void sendPasswordResetEmail(String email, String resetLink) {
+        String subject = "Password Reset Request for Travelify Account";
+        String body = String.format(
+                "Dear User,\n\n" +
+                        "You have requested to reset the password for your Travelify account. " +
+                        "Please click on the following link to reset your password:\n\n" +
+                        "%s\n\n" +
+                        "This link will expire in 1 hour. If you did not request a password reset, please ignore this email.\n\n" +
+                        "Thank you,\n" +
+                        "Travelify Team",
+                resetLink
+        );
+        sendEmail(email, subject, body);
     }
 }

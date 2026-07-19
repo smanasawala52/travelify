@@ -41,8 +41,8 @@ public class AdminController {
 
     @GetMapping("/bookings")
     @Operation(summary = "List all bookings")
-    public List<BookingDtos.BookingResponse> bookings() {
-        return bookingService.all();
+    public List<BookingDtos.BookingDetailResponse> bookings() {
+        return bookingService.listBookings(null, null, "admin");
     }
 
     @GetMapping("/overview")
@@ -51,7 +51,7 @@ public class AdminController {
         Map<String, Object> map = new HashMap<>();
         map.put("users", userService.listAll().size());
         map.put("packages", packageService.listAll().size());
-        map.put("bookings", bookingService.all().size());
+        map.put("bookings", bookingService.listBookings(null, null, "admin").size());
         return map;
     }
 }

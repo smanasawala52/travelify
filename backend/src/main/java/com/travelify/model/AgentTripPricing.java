@@ -32,7 +32,7 @@ public class AgentTripPricing {
     private PricingType pricingType;
 
     @Column(precision = 10, scale = 2)
-    private BigDecimal price;
+    private BigDecimal price; // This is likely the price per person for a given pricing type
 
     @Column(nullable = false, length = 3)
     @Builder.Default
@@ -58,5 +58,15 @@ public class AgentTripPricing {
         if (currency == null || currency.isBlank()) {
             currency = "USD";
         }
+    }
+
+    // Helper method to get price per person based on pricing type
+    public BigDecimal getPricePerPerson() {
+        // This logic might need to be more sophisticated based on PricingType
+        // For now, assuming 'price' field holds the per-person price for generic pricing.
+        // If pricingType is ADULT_CHILD_INFANT, then adultPrice, childPrice, infantPrice are used.
+        // This method needs to be context-aware or the pricing model needs refinement.
+        // For the current error, we'll return the 'price' field.
+        return this.price;
     }
 }

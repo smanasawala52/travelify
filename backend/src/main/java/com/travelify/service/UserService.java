@@ -1,6 +1,8 @@
 package com.travelify.service;
 
 import com.travelify.dto.UserDtos;
+import com.travelify.exception.ResourceNotFoundException;
+import com.travelify.model.User;
 import com.travelify.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +32,10 @@ public class UserService {
                         .lastLoginAt(u.getLastLoginAt())
                         .build())
                 .toList();
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found."));
     }
 }

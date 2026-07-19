@@ -89,19 +89,40 @@ public class DataSeeder {
 
             // 4. Create provider users (travel agents, hotels, insurance, visa)
             log.info("Creating provider users...");
-            List<User> travelAgents = createTravelAgents(hashedPassword, userRepository);
-            List<User> hotelProviders = createHotelProviders(hashedPassword, userRepository);
-            List<User> insuranceProviders = createInsuranceProviders(hashedPassword, userRepository);
-            List<User> visaProviders = createVisaProviders(hashedPassword, userRepository);
+            List<User> travelAgents = createTravelAgents(hashedPassword);
+            List<User> hotelProviders = createHotelProviders(hashedPassword);
+            List<User> insuranceProviders = createInsuranceProviders(hashedPassword);
+            List<User> visaProviders = createVisaProviders(hashedPassword);
             
-            // Save all users
+            // Save all users, checking for existence first
             List<User> allProviders = new ArrayList<>();
             allProviders.addAll(travelAgents);
             allProviders.addAll(hotelProviders);
             allProviders.addAll(insuranceProviders);
             allProviders.addAll(visaProviders);
-            userRepository.saveAll(allProviders);
 
+            List<User> newUsersToSave = new ArrayList<>();
+            for (User user : allProviders) {
+                if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
+                    newUsersToSave.add(user);
+                }
+            }
+            userRepository.saveAll(newUsersToSave);
+
+            // Re-fetch users to ensure all are managed entities
+            travelAgents = travelAgents.stream()
+                    .map(user -> userRepository.findByEmail(user.getEmail()).orElse(user))
+                    .collect(Collectors.toList());
+            hotelProviders = hotelProviders.stream()
+                    .map(user -> userRepository.findByEmail(user.getEmail()).orElse(user))
+                    .collect(Collectors.toList());
+            insuranceProviders = insuranceProviders.stream()
+                    .map(user -> userRepository.findByEmail(user.getEmail()).orElse(user))
+                    .collect(Collectors.toList());
+            visaProviders = visaProviders.stream()
+                    .map(user -> userRepository.findByEmail(user.getEmail()).orElse(user))
+                    .collect(Collectors.toList());
+            
             // 5. Create services for each provider
             log.info("Creating services...");
             List<Service> hotelServices = createHotelServices(hotelProviders);
@@ -258,7 +279,7 @@ public class DataSeeder {
         return userRepository.save(admin);
     }
 
-    private List<User> createTravelAgents(String hashedPassword, UserRepository userRepository) {
+    private List<User> createTravelAgents(String hashedPassword) {
         List<String[]> agentData = List.of(
                 new String[]{"agent1@travelify.com", "Alex", "Johnson"},
                 new String[]{"agent2@travelify.com", "Sara", "Chen"},
@@ -288,7 +309,7 @@ public class DataSeeder {
                 .collect(Collectors.toList());
     }
 
-    private List<User> createHotelProviders(String hashedPassword, UserRepository userRepository) {
+    private List<User> createHotelProviders(String hashedPassword) {
         return IntStream.range(1, 11)
                 .mapToObj(i -> User.builder()
                         .email("hotel" + i + "@travelify.com")
@@ -307,7 +328,7 @@ public class DataSeeder {
                 .collect(Collectors.toList());
     }
 
-    private List<User> createInsuranceProviders(String hashedPassword, UserRepository userRepository) {
+    private List<User> createInsuranceProviders(String hashedPassword) {
         return IntStream.range(1, 6)
                 .mapToObj(i -> User.builder()
                         .email("insurance" + i + "@travelify.com")
@@ -326,7 +347,7 @@ public class DataSeeder {
                 .collect(Collectors.toList());
     }
 
-    private List<User> createVisaProviders(String hashedPassword, UserRepository userRepository) {
+    private List<User> createVisaProviders(String hashedPassword) {
         return IntStream.range(1, 6)
                 .mapToObj(i -> User.builder()
                         .email("visa" + i + "@travelify.com")

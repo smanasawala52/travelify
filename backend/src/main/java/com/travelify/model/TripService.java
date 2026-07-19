@@ -59,4 +59,17 @@ public class TripService {
             isOptional = true;
         }
     }
+
+    // Helper method to get the effective price of the trip service
+    public BigDecimal getPrice() {
+        return overridePrice != null ? overridePrice : service.getPrice();
+    }
+
+    public String getName() {
+        return service.getName();
+    }
+
+    public String getDescription() {
+        return service.getDescription();
+    }
 }
