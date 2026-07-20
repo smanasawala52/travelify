@@ -16,8 +16,8 @@ public class PackageController {
     }
 
     @GetMapping
-    public List<PackageDtos.PackageResponse> list() {
-        return packageService.listActive();
+    public List<PackageDtos.PackageResponse> list(@ModelAttribute PackageDtos.PackageFilterRequest filterRequest) {
+        return packageService.listFilteredPackages(filterRequest);
     }
 
     @GetMapping("/{id}")

@@ -36,5 +36,16 @@ public final class PackageDtos {
         private BigDecimal price;
         private Integer durationDays;
         private Boolean active;
+        private String categoryName; // Added category name
+        private String categorySlug; // Added category slug
+    }
+
+    @Data
+    public static class PackageFilterRequest {
+        private String categorySlug;
+        private BigDecimal minPrice;
+        private BigDecimal maxPrice;
+        private Integer minDurationDays;
+        private Integer maxDurationDays;
     }
 }

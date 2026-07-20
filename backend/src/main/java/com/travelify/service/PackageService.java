@@ -5,21 +5,27 @@ import com.travelify.exception.ApiException;
 import com.travelify.model.TravelPackage;
 import com.travelify.model.User;
 import com.travelify.repository.TravelPackageRepository;
+import com.travelify.repository.TripCategoryRepository;
 import com.travelify.repository.UserRepository;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PackageService {
     private final TravelPackageRepository packageRepository;
     private final UserRepository userRepository;
+    private final TripCategoryRepository tripCategoryRepository;
 
-    public PackageService(TravelPackageRepository packageRepository, UserRepository userRepository) {
+    public PackageService(TravelPackageRepository packageRepository, UserRepository userRepository, TripCategoryRepository tripCategoryRepository) {
         this.packageRepository = packageRepository;
         this.userRepository = userRepository;
+        this.tripCategoryRepository = tripCategoryRepository;
     }
 
     public List<PackageDtos.PackageResponse> listActive() {
@@ -32,6 +38,33 @@ public class PackageService {
 
     public PackageDtos.PackageResponse getById(Long id) {
         return toResponse(find(id));
+    }
+
+    public List<PackageDtos.PackageResponse> listFilteredPackages(PackageDtos.PackageFilterRequest filterRequest) {
+        Specification<TravelPackage> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(cb.isTrue(root.get("active"))); // Only active packages
+
+            if (filterRequest.getCategorySlug() != null && !filterRequest.getCategorySlug().isEmpty()) {
+                predicates.add(cb.equal(root.get("tripCategory").get("slug"), filterRequest.getCategorySlug()));
+            }
+            if (filterRequest.getMinPrice() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), filterRequest.getMinPrice()));
+            }
+            if (filterRequest.getMaxPrice() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("price"), filterRequest.getMaxPrice()));
+            }
+            if (filterRequest.getMinDurationDays() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("durationDays"), filterRequest.getMinDurationDays()));
+            }
+            if (filterRequest.getMaxDurationDays() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("durationDays"), filterRequest.getMaxDurationDays()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return packageRepository.findAll(spec).stream().map(this::toResponse).toList();
     }
 
     @Transactional
@@ -78,6 +111,8 @@ public class PackageService {
                 .price(entity.getPrice())
                 .durationDays(entity.getDurationDays())
                 .active(entity.getActive())
+                .categoryName(entity.getTripCategory() != null ? entity.getTripCategory().getName() : null)
+                .categorySlug(entity.getTripCategory() != null ? entity.getTripCategory().getSlug() : null)
                 .build();
     }
 }

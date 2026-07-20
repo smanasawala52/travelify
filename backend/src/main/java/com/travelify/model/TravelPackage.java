@@ -40,6 +40,10 @@ public class TravelPackage {
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private TripCategory tripCategory;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
